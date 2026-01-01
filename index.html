@@ -502,7 +502,8 @@
     on('keydown', event => {
       if (event.defaultPrevented) return
       prev = toString()
-      handleUndoRedo(event)
+      if (isUndo(event)) doUndo(event)
+      if (isRedo(event)) doRedo(event)
       if (shouldRecord(event) && !recording) {
         recordHistory()
         recording = true
@@ -534,6 +535,11 @@
       recordHistory()
       handleCut(event)
       recordHistory()
+    })
+
+    on('beforeinput', event => {
+      if (event.inputType === 'historyUndo') doUndo(event)
+      if (event.inputType === 'historyRedo') doRedo(event)
     })
 
     function save() {
@@ -671,27 +677,26 @@
       }
     }
 
-    function handleUndoRedo(event) {
-      if (isUndo(event)) {
-        preventDefault(event)
-        at--
-        const record = history[at]
-        if (record) {
-          element.innerHTML = record.html
-          restore(record.pos)
-        }
-        if (at < 0) at = 0
+    function doUndo(event) {
+      preventDefault(event)
+      at--
+      const record = history[at]
+      if (record) {
+        element.innerHTML = record.html
+        restore(record.pos)
       }
-      if (isRedo(event)) {
-        preventDefault(event)
-        at++
-        const record = history[at]
-        if (record) {
-          element.innerHTML = record.html
-          restore(record.pos)
-        }
-        if (at >= history.length) at--
+      if (at < 0) at = 0
+    }
+
+    function doRedo(event) {
+      preventDefault(event)
+      at++
+      const record = history[at]
+      if (record) {
+        element.innerHTML = record.html
+        restore(record.pos)
       }
+      if (at >= history.length) at--
     }
 
     function recordHistory() {
