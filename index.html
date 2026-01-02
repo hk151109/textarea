@@ -744,7 +744,7 @@
     return {
       set(content) {
         element.textContent = content
-        if (content.length < 100_000) highlight(element)
+        highlight(element)
       },
       destroy() {
         for (const [type, fn] of listeners) editor.removeEventListener(type, fn)
