@@ -6,12 +6,17 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,9 +29,11 @@ jobs:
           sed -i "s|__SHORTIO_DOMAIN__|${SHORTIO_DOMAIN}|g" index.html
           sed -i "s|__SHORTIO_KEY__|${SHORTIO_KEY}|g" index.html
 
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=textarea-my --branch=main
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
