@@ -688,7 +688,7 @@
           <input class="settings-input" type="text" id="short-io-domain" placeholder="Domain (e.g. link.domain.com)" />
           <input class="settings-input" type="password" id="short-io-key" placeholder="Short.io Secret Key" />
         </div>
-        <a class="settings-btn" id="qr" href="/qr">
+        <a class="settings-btn" id="qr" href="qr.html">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -1329,7 +1329,7 @@
 
   // QR link stays href but needs current hash
   const qrLink = document.querySelector('#qr')
-  const updateQR = () => qrLink.setAttribute('href', '/qr' + location.hash)
+  const updateQR = () => qrLink.setAttribute('href', 'qr.html' + location.hash)
   updateQR()
   addEventListener('hashchange', updateQR)
 
