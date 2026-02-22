@@ -995,6 +995,13 @@
   const DEFAULT_SHORTIO_DOMAIN = '__SHORTIO_DOMAIN__'
   const DEFAULT_SHORTIO_KEY = '__SHORTIO_KEY__'
 
+  if (!DEFAULT_SHORTIO_DOMAIN.startsWith('__')) {
+    shortIoDomain.placeholder = `Default: ${DEFAULT_SHORTIO_DOMAIN}`
+  }
+  if (!DEFAULT_SHORTIO_KEY.startsWith('__')) {
+    shortIoKey.placeholder = 'Default key is active'
+  }
+
   async function getShortUrl(longUrl) {
     // User's own credentials take priority; fall back to deploy-time defaults
     const domain = shortIoDomain.value.trim()
