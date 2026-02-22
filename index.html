@@ -31,27 +31,381 @@
     }
   }
 
+  /* ── Layout ── */
   body {
+    display: flex;
     color: var(--text);
   }
 
-  a {
-    color: var(--link);
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 1px;
+  #main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    transition: margin-right 0.3s ease;
+  }
+
+  body.sidebar-collapsed #main {
+    margin-right: 44px;
+    /* width of collapsed bar */
+  }
+
+  /* ── Title & Article ── */
+  #title-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font: 2em / 1.2 system-ui;
+    font-weight: 700;
+    padding: 24px 40px 0;
+    background: transparent;
+    color: var(--text);
   }
 
   article {
     outline: none;
-    padding: 18px max(18px, calc(50vw - 400px));
+    padding: 12px 40px 40px;
     width: 100%;
-    min-height: 100dvh;
+    min-height: calc(100dvh - 4em);
     font: 18px / 1.5 system-ui;
     tab-size: 4;
     white-space: pre-wrap;
     text-wrap-style: stable;
     overflow-wrap: break-word;
+  }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100dvh;
+    background: var(--elevated);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    transition: width 0.25s ease;
+    overflow: hidden;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #sidebar {
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  body.sidebar-collapsed #sidebar {
+    width: 44px;
+  }
+
+  /* reserve space for the sidebar so main content doesn't go under */
+  body:not(.sidebar-collapsed) #main {
+    margin-right: 280px;
+  }
+
+  /* Sidebar header row */
+  #sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 8px;
+    gap: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #sidebar-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  #sidebar-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    padding: 6px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  #sidebar-toggle:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #sidebar-toggle:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  #sidebar-title {
+    font-weight: 600;
+    font-size: 15px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+
+  body.sidebar-collapsed #sidebar-title {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Sidebar body (hidden when collapsed) */
+  #sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    opacity: 1;
+    transition: opacity 0.15s;
+  }
+
+  body.sidebar-collapsed #sidebar-body {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Settings section inside sidebar ── */
+  #settings-section {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #settings-section {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  #settings-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 14px / 1 system-ui;
+    font-weight: 600;
+    padding: 4px 0;
+    width: 100%;
+  }
+
+  #settings-toggle svg {
+    flex-shrink: 0;
+  }
+
+  #settings-body {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #settings-body.open {
+    display: flex;
+  }
+
+  .settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .settings-label {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .settings-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font: 13px system-ui;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .settings-input {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .settings-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: none;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text);
+    cursor: pointer;
+    font: 13px system-ui;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .settings-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .settings-btn {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .settings-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  /* ── Actions (new doc) ── */
+  #sidebar-actions {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #sidebar-actions {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  /* ── History ── */
+  #sidebar-history {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  #sidebar-history h3 {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  #history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+
+  .history-item:hover {
+    background: rgba(0, 0, 0, 0.09);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .history-item {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .history-item-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .history-item-title {
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-item-time {
+    font-size: 11px;
+    opacity: 0.55;
+    margin-top: 2px;
+  }
+
+  .history-item-copy {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+    padding: 3px;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .history-item-copy:hover {
+    opacity: 1;
+  }
+
+  /* ── Notification ── */
+  #notification {
+    visibility: hidden;
+    transform: translateY(-30px);
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    opacity: 0;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(-30px);
+    top: 17px;
+    background: #5ad227;
+    color: #fff;
+    border-radius: 30px;
+    font: 15px / 1 system-ui;
+    font-weight: 600;
+    z-index: 100;
+    padding: 9px 18px;
+  }
+
+  #notification.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
+  }
+
+  @media print {
+    .noprint {
+      visibility: hidden !important;
+    }
   }
 
   .md-h1,
@@ -87,10 +441,7 @@
     font-size: 0.9em;
   }
 
-  .md-code {
-    font-family: monospace;
-  }
-
+  .md-code,
   .md-codeblock {
     font-family: monospace;
   }
@@ -111,271 +462,909 @@
     cursor: pointer;
   }
 
-  #button {
-    -webkit-tap-highlight-color: transparent;
-    background-color: #0569fa;
-    border-radius: 50%;
-    border: none;
-    bottom: 15px;
-    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, .12);
-    color: #fff;
-    cursor: pointer;
-    display: grid;
-    font-weight: 600;
-    width: 46px;
-    height: 46px;
-    outline: none;
-    overflow: hidden;
-    padding: 0;
-    place-items: center;
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* ── Status bar ── */
+  #status-bar {
     position: fixed;
-    right: 15px;
-    text-decoration: none;
-    touch-action: manipulation;
-    transition: background-color .3s ease-out;
-    user-select: none;
-    z-index: 1;
-  }
-
-  @media (hover) {
-    #button:hover {
-      color: #fff;
-      background-color: #3c86f3;
-      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, .12);
-    }
-  }
-
-  #button:focus-visible {
-    outline: 2px solid var(--outline);
-    outline-offset: 2px;
-  }
-
-  span.ripple {
-    position: absolute;
-    border-radius: 50%;
-    transform: scale(0);
-    animation: ripple 600ms linear;
-    background-color: rgba(255, 255, 255, 0.7);
-  }
-
-  @keyframes ripple {
-    to {
-      transform: scale(4);
-      opacity: 0;
-    }
-  }
-
-  #menu {
-    visibility: hidden;
-    transform: scale(0.9) translateY(20px);
-    transition: all 100ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-    width: 220px;
-    position: fixed;
-    right: 16px;
-    bottom: 77px;
-    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.10), 0 15px 12px rgba(0, 0, 0, 0.05);
-    background: var(--elevated);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    z-index: 2;
-  }
-
-  #menu.visible {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    visibility: visible;
-  }
-
-  #menu .item {
+    bottom: 0;
+    left: 0;
+    padding: 5px 40px;
+    font-size: 12px;
+    opacity: 0.45;
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: left;
-    padding: 10px 14px;
-    overflow: hidden;
+    gap: 12px;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-    border: none;
-    touch-action: manipulation;
-    font: 16px / 1.5 system-ui;
-    color: var(--text);
+    pointer-events: none;
   }
 
-  #menu .item:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-    @media (prefers-color-scheme: dark) {
-      background-color: #353535;
-    }
-  }
-
-  #menu .item:focus-within {
-    outline: 2px solid var(--outline);
-  }
-
-  #menu .item:first-child {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-
-  #menu .item:last-child {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-
-  #notification {
-    visibility: hidden;
-    transform: translateY(-30px);
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    opacity: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    position: fixed;
-    right: 17px;
-    top: 17px;
-
+  /* ── Autosave indicator ── */
+  #save-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
     background: #5ad227;
-    color: #fff;
-    border-radius: 30px;
-    font: 18px / 1 system-ui;
-    font-weight: 600;
-    z-index: 2;
-    padding: 10px 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    flex-shrink: 0;
   }
 
-  #notification.visible {
+  #save-dot.flash {
     opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
   }
 
-  @media print {
-    .noprint {
-      visibility: hidden !important;
+  /* ── History search ── */
+  #history-search {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font: 13px system-ui;
+    outline: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #history-search {
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
+  }
+
+  /* ── Active history item ── */
+  .history-item.current {
+    border-left: 3px solid var(--outline);
+    padding-left: 7px;
+  }
+
+  /* ── Empty history state ── */
+  #history-empty {
+    font-size: 13px;
+    opacity: 0.45;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  /* ── Editor wrapper (gutter + article) ── */
+  #editor-wrap {
+    display: flex;
+    flex: 1;
+    min-height: calc(100dvh - 3.6em);
+  }
+
+  /* ── Line number gutter ── */
+  #gutter {
+    width: 44px;
+    padding: 12px 8px 40px 0;
+    text-align: right;
+    font: 18px / 1.5 system-ui;
+    color: var(--text);
+    opacity: 0.25;
+    user-select: none;
+    pointer-events: none;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  #gutter div {
+    height: 1.5em;
+  }
+
+  /* patch article left padding to sit next to gutter */
+  article {
+    padding-left: 12px !important;
+  }
+
+  /* ── In-doc search bar ── */
+  #find-bar {
+    display: none;
+    position: fixed;
+    top: 12px;
+    right: 310px;
+    /* clear the sidebar */
+    z-index: 20;
+    background: var(--elevated);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 6px 10px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    min-width: 280px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #find-bar {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  #find-bar.open {
+    display: flex;
+  }
+
+  #find-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: 14px system-ui;
+  }
+
+  #find-count {
+    font-size: 12px;
+    opacity: 0.5;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  #find-prev,
+  #find-next,
+  #find-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    opacity: 0.6;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  #find-prev:hover,
+  #find-next:hover,
+  #find-close:hover {
+    opacity: 1;
+  }
+
+  /* CSS Custom Highlight for search matches */
+  ::highlight(find-match) {
+    background-color: rgba(255, 200, 0, 0.45);
+    color: inherit;
+  }
+
+  ::highlight(find-match-current) {
+    background-color: rgba(255, 140, 0, 0.7);
+    color: inherit;
   }
 </style>
-<article contenteditable="plaintext-only" spellcheck autofocus></article>
-<button id="button" class="noprint">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor"
-       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="1"></circle>
-    <circle cx="12" cy="5" r="1"></circle>
-    <circle cx="12" cy="19" r="1"></circle>
-  </svg>
-</button>
-<div id="menu" class="noprint" role="menu">
-  <a class="item" href="#new" target="_blank" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-plus"></use>
-    </svg>
-    New document
-  </a>
-  <a class="item" id="qr" href="/qr" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-qrcode"></use>
-    </svg>
-    Generate QR code
-  </a>
-  <a class="item" id="share-link" href="" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-share"></use>
-    </svg>
-    Share document
-  </a>
-  <a class="item" id="save-as-html" href="" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-empty"></use>
-    </svg>
-    Save as HTML
-  </a>
-  <a class="item" id="save-as-text" href="" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-empty"></use>
-    </svg>
-    Save as TEXT
-  </a>
-  <a class="item" href="https://github.com/antonmedv/textarea" target="_blank" role="menuitem">
-    <svg aria-hidden="true" focusable="false" width="22" height="22">
-      <use xlink:href="#icon-github"></use>
-    </svg>
-    GitHub
-  </a>
+<div id="main">
+  <input id="title-input" placeholder="Title" spellcheck="false" autocomplete="off" autofocus />
+  <div id="editor-wrap">
+    <div id="gutter"></div>
+    <article contenteditable="plaintext-only" spellcheck></article>
+  </div>
+  <div id="status-bar" class="noprint">
+    <span id="save-dot"></span>
+    <span id="word-count">0 words</span>
+    <span id="char-count">0 chars</span>
+    <span id="ln-col">Ln 1, Col 1</span>
+  </div>
 </div>
+<div id="find-bar" class="noprint">
+  <input id="find-input" placeholder="Search or :12 to jump to line" />
+  <span id="find-count"></span>
+  <button id="find-prev" title="Previous (Shift+Enter)">&#8593;</button>
+  <button id="find-next" title="Next (Enter)">&#8595;</button>
+  <button id="find-close" title="Close (Esc)">&#x2715;</button>
+</div>
+<aside id="sidebar" class="noprint">
+  <div id="sidebar-header">
+    <button id="sidebar-toggle" aria-label="Toggle Sidebar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <span id="sidebar-title">TextArea</span>
+  </div>
+  <div id="sidebar-body">
+    <!-- Settings Section -->
+    <div id="settings-section">
+      <button id="settings-toggle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42">
+          </path>
+        </svg>
+        Settings
+      </button>
+      <div id="settings-body">
+        <div class="settings-group">
+          <span class="settings-label">Short.io Link Shortening</span>
+          <input class="settings-input" type="text" id="short-io-domain" placeholder="Domain (e.g. link.domain.com)" />
+          <input class="settings-input" type="password" id="short-io-key" placeholder="Short.io Secret Key" />
+        </div>
+        <a class="settings-btn" id="qr" href="/qr">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Generate QR Code
+        </a>
+        <button class="settings-btn" id="save-as-html">Save as HTML</button>
+        <button class="settings-btn" id="save-as-text">Save as TEXT</button>
+        <a class="settings-btn" href="https://github.com/antonmedv/textarea" target="_blank">GitHub</a>
+        <button class="settings-btn" id="clear-all-storage" style="color:#e04f4f;margin-top:4px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14H6L5 6"></path>
+            <path d="M10 11v6M14 11v6"></path>
+            <path d="M9 6V4h6v2"></path>
+          </svg>
+          Clear All Data
+        </button>
+      </div>
+    </div>
+
+    <!-- New Doc Action -->
+    <div id="sidebar-actions">
+      <button class="settings-btn" id="new-browser-tab" style="width:100%;justify-content:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        New (cmd+shift+.)
+      </button>
+    </div>
+
+    <!-- History -->
+    <div id="sidebar-history">
+      <h3>Recent Documents</h3>
+      <input id="history-search" placeholder="Search..." />
+      <div id="history-list"></div>
+    </div>
+  </div>
+</aside>
 <div id="notification" class="noprint"></div>
 <script>
   initUI()
 
   const article = document.querySelector('article')
+  const titleInput = document.querySelector('#title-input')
   const editor = new Editor(article, parseMarkdown)
-  article.addEventListener('input', debounce(500, save))
+
+  const saveAndDebounce = debounce(500, save)
+  article.addEventListener('input', saveAndDebounce)
+  titleInput.addEventListener('input', saveAndDebounce)
+
   article.addEventListener('blur', save)
+  titleInput.addEventListener('blur', save)
+
+  // Enter on title jumps to content
+  titleInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      article.focus()
+    }
+  })
+
+  // Live word + char count
+  const wordCountEl = document.querySelector('#word-count')
+  const charCountEl = document.querySelector('#char-count')
+  const saveDot = document.querySelector('#save-dot')
+  let saveDotTimer = null
+
+  // Live word + char count
+  const lnColEl = document.querySelector('#ln-col')
+  const gutterEl = document.querySelector('#gutter')
+
+  function updateStats() {
+    const text = article.textContent
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0
+    wordCountEl.textContent = words + (words === 1 ? ' word' : ' words')
+    charCountEl.textContent = text.length + (text.length === 1 ? ' char' : ' chars')
+    updateGutter(text)
+  }
+
+  function updateGutter(text) {
+    gutterEl.innerHTML = ''
+    const count = (text || '').split('\n').length
+    for (let i = 1; i <= count; i++) {
+      const d = document.createElement('div')
+      d.textContent = i
+      gutterEl.appendChild(d)
+    }
+  }
+
+  function updateLnCol() {
+    const sel = window.getSelection()
+    if (!sel || !sel.rangeCount) return
+    const range = sel.getRangeAt(0)
+    // Walk back through text to count lines
+    const preRange = document.createRange()
+    preRange.setStart(article, 0)
+    preRange.setEnd(range.startContainer, range.startOffset)
+    const pre = preRange.toString()
+    const ln = (pre.match(/\n/g) || []).length + 1
+    const col = pre.length - pre.lastIndexOf('\n')
+    lnColEl.textContent = `Ln ${ln}, Col ${col}`
+  }
+
+  article.addEventListener('input', updateStats)
+  article.addEventListener('keyup', updateLnCol)
+  article.addEventListener('mouseup', updateLnCol)
+  updateStats()
+
+  // ── In-document Find ──────────────────────────────────────
+  const findBar = document.querySelector('#find-bar')
+  const findInput = document.querySelector('#find-input')
+  const findCount = document.querySelector('#find-count')
+  const findPrev = document.querySelector('#find-prev')
+  const findNext = document.querySelector('#find-next')
+  const findClose = document.querySelector('#find-close')
+
+  let findMatches = []
+  let findIndex = 0
+  const supportsHighlight = typeof CSS !== 'undefined' && CSS.highlights
+
+  function getAllTextNodes(el) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+    const nodes = []
+    let n
+    while ((n = walker.nextNode())) nodes.push(n)
+    return nodes
+  }
+
+  function runFind(query) {
+    if (supportsHighlight) {
+      CSS.highlights.delete('find-match')
+      CSS.highlights.delete('find-match-current')
+    }
+    findMatches = []
+    findCount.textContent = ''
+    if (!query) return
+
+    // :N → go to line N
+    const lineMatch = query.match(/^:(\d+)$/)
+    if (lineMatch) {
+      const targetLine = parseInt(lineMatch[1], 10)
+      const textNodes = getAllTextNodes(article)
+      let linesSeen = 1
+      for (const node of textNodes) {
+        const parts = node.textContent.split('\n')
+        for (let i = 0; i < parts.length; i++) {
+          if (linesSeen === targetLine) {
+            const range = document.createRange()
+            const offset = parts.slice(0, i).join('\n').length + (i > 0 ? 1 : 0)
+            try {
+              range.setStart(node, Math.min(offset, node.textContent.length))
+              range.collapse(true)
+              const sel = window.getSelection()
+              sel.removeAllRanges()
+              sel.addRange(range)
+              // Find and scroll to a gutter line div
+              const gutterLine = gutterEl.children[targetLine - 1]
+              if (gutterLine) gutterLine.scrollIntoView({ block: 'center' })
+              findCount.textContent = `Line ${targetLine}`
+            } catch (e) { }
+            return
+          }
+          if (i < parts.length - 1) linesSeen++
+        }
+      }
+      findCount.textContent = 'Line not found'
+      return
+    }
+
+    // Text search
+    const textNodes = getAllTextNodes(article)
+    const ranges = []
+    for (const node of textNodes) {
+      const text = node.textContent
+      const lower = text.toLowerCase()
+      const q = query.toLowerCase()
+      let idx = 0
+      while ((idx = lower.indexOf(q, idx)) !== -1) {
+        const range = document.createRange()
+        range.setStart(node, idx)
+        range.setEnd(node, idx + query.length)
+        ranges.push(range)
+        idx += query.length
+      }
+    }
+    findMatches = ranges
+    if (ranges.length === 0) {
+      findCount.textContent = 'No results'
+      return
+    }
+    findIndex = -1
+    if (supportsHighlight) {
+      CSS.highlights.set('find-match', new Highlight(...ranges))
+    }
+    // highlight only — do NOT steal cursor focus
+    findCount.textContent = `${ranges.length} match${ranges.length === 1 ? '' : 'es'}`
+    // Scroll first match into view without changing selection
+    try {
+      ranges[0].startContainer.parentElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    } catch (e) { }
+  }
+
+  function scrollToMatch(idx) {
+    if (!findMatches.length) return
+    findIndex = ((idx % findMatches.length) + findMatches.length) % findMatches.length
+    const range = findMatches[findIndex]
+    findCount.textContent = `${findIndex + 1} / ${findMatches.length}`
+    if (supportsHighlight) {
+      CSS.highlights.set('find-match-current', new Highlight(range))
+    }
+    // Scroll the match into the center of the viewport without touching the cursor
+    const rect = range.getBoundingClientRect()
+    const target = window.scrollY + rect.top - window.innerHeight / 2
+    window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+
+  function openFind() {
+    findBar.classList.add('open')
+    findInput.focus()
+    findInput.select()
+  }
+
+  function closeFind() {
+    findBar.classList.remove('open')
+    if (supportsHighlight) {
+      CSS.highlights.delete('find-match')
+      CSS.highlights.delete('find-match-current')
+    }
+    findMatches = []
+    findCount.textContent = ''
+    article.focus()
+  }
+
+  findInput.addEventListener('input', e => runFind(e.target.value.trim()))
+  findInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); scrollToMatch(e.shiftKey ? findIndex - 1 : findIndex + 1) }
+    if (e.key === 'Escape') closeFind()
+  })
+  findNext.addEventListener('click', () => scrollToMatch(findIndex + 1))
+  findPrev.addEventListener('click', () => scrollToMatch(findIndex - 1))
+  findClose.addEventListener('click', closeFind)
+
   article.addEventListener('click', event => {
     if (event.target.tagName === 'A') window.open(event.target.getAttribute('href'), '_blank')
   })
-  addEventListener('DOMContentLoaded', load)
+
   addEventListener('hashchange', load)
-  addEventListener('load', () => new MutationObserver(save).observe(article, {attributeFilter: ['style']}))
+  addEventListener('DOMContentLoaded', load)
+  addEventListener('load', () => new MutationObserver(save).observe(article, { attributeFilter: ['style'] }))
+
+  function openNewDoc() {
+    const a = Object.assign(document.createElement('a'), {
+      href: location.pathname + '#new',
+      target: '_blank',
+      rel: 'noopener'
+    })
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
+
   addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && e.code === 'KeyS') {
-      e.preventDefault()
-      downloadHTML()
+    if (e.metaKey || e.ctrlKey) {
+      if (e.code === 'KeyS') {
+        e.preventDefault()
+        downloadHTML()
+      }
+      if (e.code === 'KeyF') {
+        e.preventDefault()
+        openFind()
+      }
+      // Cmd/Ctrl+Shift+. — new document (not reserved by Chrome)
+      if (e.shiftKey && e.code === 'Period') {
+        e.preventDefault()
+        openNewDoc()
+      }
     }
   })
+
+  // Wire new-browser-tab button to same helper
+  document.querySelector('#new-browser-tab').addEventListener('click', openNewDoc)
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
   }
 
-  console.log('%cGitHub https://github.com/antonmedv/textarea', 'font-size: 16px; border: 1px solid lightblue; border-radius: 12px; padding: 10px 14px; ')
+  // Short.io Setup
+  const shortIoDomain = document.querySelector('#short-io-domain')
+  const shortIoKey = document.querySelector('#short-io-key')
 
-  async function load() {
+  if (localStorage.getItem('shortIoDomain')) shortIoDomain.value = localStorage.getItem('shortIoDomain')
+  if (localStorage.getItem('shortIoKey')) shortIoKey.value = localStorage.getItem('shortIoKey')
+
+  shortIoDomain.addEventListener('input', () => localStorage.setItem('shortIoDomain', shortIoDomain.value))
+  shortIoKey.addEventListener('input', () => localStorage.setItem('shortIoKey', shortIoKey.value))
+
+  // Baked-in defaults injected at deploy time — users can override in Settings
+  const DEFAULT_SHORTIO_DOMAIN = '__SHORTIO_DOMAIN__'
+  const DEFAULT_SHORTIO_KEY = '__SHORTIO_KEY__'
+
+  async function getShortUrl(longUrl) {
+    // User's own credentials take priority; fall back to deploy-time defaults
+    const domain = shortIoDomain.value.trim()
+      || (DEFAULT_SHORTIO_DOMAIN.startsWith('__') ? '' : DEFAULT_SHORTIO_DOMAIN)
+    const key = shortIoKey.value.trim()
+      || (DEFAULT_SHORTIO_KEY.startsWith('__') ? '' : DEFAULT_SHORTIO_KEY)
+
+    if (!domain || !key) return longUrl
+
     try {
-      if (location.hash !== '') await set(location.hash)
-      else {
-        await set(localStorage.getItem('hash') ?? '')
-        if (article.textContent) history.replaceState({}, '', await get())
+      const response = await fetch('https://api.short.io/links', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': key
+        },
+        body: JSON.stringify({
+          domain: domain,
+          originalURL: longUrl
+        })
+      })
+      const data = await response.json()
+      // Short.io returns secureShortURL for HTTPS, shortURL for HTTP
+      if (data.secureShortURL) return data.secureShortURL
+      if (data.shortURL) return data.shortURL
+      // Surface API errors so the user knows what went wrong
+      if (data.error) {
+        notify('Short.io: ' + data.error)
+        console.error('Short.io error:', data)
       }
     } catch (e) {
-      article.textContent = ''
+      notify('Short.io unavailable')
+      console.error('Short.io fetch failed:', e)
+    }
+    return longUrl
+  }
+
+  function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand('copy');
+      notify('Link copied');
+    } catch (err) {
+      notify('Failed to copy');
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
+  }
+
+  async function shareDocument() {
+    notify('Generating link...')
+    const urlToShare = await getShortUrl(location.href)
+
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(urlToShare)
+        notify('Link copied')
+      } catch (err) {
+        fallbackCopyTextToClipboard(urlToShare)
+      }
+    } else {
+      fallbackCopyTextToClipboard(urlToShare)
+    }
+  }
+
+  console.log('%cGitHub https://github.com/antonmedv/textarea', 'font-size: 16px; border: 1px solid lightblue; border-radius: 12px; padding: 10px 14px; ')
+
+  let currentDocId = null;
+
+  async function load() {
+    // #new means the user explicitly wants a blank document
+    if (location.hash === '#new') {
+      history.replaceState({}, '', location.pathname)
+      currentDocId = crypto.randomUUID()
+      editor.set('')
+      titleInput.value = ''
+      article.removeAttribute('style')
+      updateTitle()
+      return
+    }
+
+    const hashToLookup = location.hash
+
+    let foundDocId = null
+    if (hashToLookup !== '') {
+      try {
+        const docs = JSON.parse(localStorage.getItem('doc_history_v3')) || {}
+        for (const [id, doc] of Object.entries(docs)) {
+          if (doc.hash === hashToLookup) {
+            foundDocId = id
+            break
+          }
+        }
+      } catch (e) { }
+    }
+
+    currentDocId = foundDocId || crypto.randomUUID()
+
+    try {
+      if (hashToLookup !== '') {
+        await set(hashToLookup)
+      } else {
+        // No hash — restore last session
+        const savedHash = localStorage.getItem('hash') ?? ''
+        if (savedHash) {
+          await set(savedHash)
+          history.replaceState({}, '', savedHash)
+        } else {
+          editor.set('')
+          titleInput.value = ''
+          article.removeAttribute('style')
+        }
+      }
+    } catch (e) {
+      editor.set('')
+      titleInput.value = ''
       article.removeAttribute('style')
     }
+
     updateTitle()
+
+    // Auto-import shared links into history
+    const title = titleInput.value.trim()
+    if (title && hashToLookup && !foundDocId) {
+      updateDocsHistory(hashToLookup, title)
+    }
+
+    // Refresh gutter and counts after content is loaded
+    updateStats()
   }
 
   async function save() {
     const hash = await get()
     if (location.hash !== hash) history.replaceState({}, '', hash)
+
     try {
       localStorage.setItem('hash', hash)
-    } catch (e) {
-    }
+    } catch (e) { }
+
+    // Flash the autosave dot
+    saveDot.classList.add('flash')
+    clearTimeout(saveDotTimer)
+    saveDotTimer = setTimeout(() => saveDot.classList.remove('flash'), 1200)
+
     updateTitle()
+    const title = titleInput.value.trim()
+    if (title) {
+      updateDocsHistory(hash, title)
+    }
   }
+
+  // Document History Management
+  function updateDocsHistory(hash, title) {
+    if (!hash || hash === '#' || !title) return
+    let docs = {}
+    try {
+      docs = JSON.parse(localStorage.getItem('doc_history_v3')) || {}
+    } catch (e) { }
+
+    if (!currentDocId) currentDocId = crypto.randomUUID();
+
+    docs[currentDocId] = {
+      hash,
+      title,
+      timestamp: Date.now()
+    }
+
+    // Sort and limit to 50
+    const sortedIds = Object.keys(docs).sort((a, b) => docs[b].timestamp - docs[a].timestamp).slice(0, 50)
+    const newDocs = {}
+    for (const id of sortedIds) {
+      newDocs[id] = docs[id]
+    }
+    localStorage.setItem('doc_history_v3', JSON.stringify(newDocs))
+    renderHistory()
+  }
+
+  function relativeTime(ts) {
+    const diff = Date.now() - ts
+    const m = Math.floor(diff / 60000)
+    if (m < 1) return 'just now'
+    if (m < 60) return m + 'm ago'
+    const h = Math.floor(m / 60)
+    if (h < 24) return h + 'h ago'
+    const d = Math.floor(h / 24)
+    if (d < 7) return d + 'd ago'
+    return new Date(ts).toLocaleDateString()
+  }
+
+  function renderHistory(query = '') {
+    const list = document.querySelector('#history-list')
+    list.innerHTML = ''
+    try {
+      const docs = JSON.parse(localStorage.getItem('doc_history_v3')) || {}
+      const sortedIds = Object.keys(docs).sort((a, b) => docs[b].timestamp - docs[a].timestamp)
+      const currentHash = location.hash
+
+      const filtered = query
+        ? sortedIds.filter(id => docs[id].title.toLowerCase().includes(query.toLowerCase()))
+        : sortedIds
+
+      if (filtered.length === 0) {
+        const empty = document.createElement('p')
+        empty.id = 'history-empty'
+        empty.textContent = query ? 'No results' : 'No documents yet'
+        list.appendChild(empty)
+        return
+      }
+
+      for (const id of filtered) {
+        const item = docs[id]
+        const a = document.createElement('a')
+        a.href = item.hash
+        a.className = 'history-item' + (item.hash === currentHash ? ' current' : '')
+
+        const contentDiv = document.createElement('div')
+        contentDiv.className = 'history-item-content'
+
+        const titleSpan = document.createElement('span')
+        titleSpan.className = 'history-item-title'
+        titleSpan.textContent = item.title
+
+        const timeSpan = document.createElement('span')
+        timeSpan.className = 'history-item-time'
+        timeSpan.textContent = relativeTime(item.timestamp)
+        timeSpan.title = new Date(item.timestamp).toLocaleString()
+
+        contentDiv.appendChild(titleSpan)
+        contentDiv.appendChild(timeSpan)
+        a.appendChild(contentDiv)
+
+        const copyBtn = document.createElement('button')
+        copyBtn.className = 'history-item-copy'
+        copyBtn.title = 'Copy Share Link'
+        copyBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        `
+        const fullUrl = location.origin + location.pathname + item.hash
+        copyBtn.addEventListener('click', async (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          notify('Generating link...')
+          const shareUrl = await getShortUrl(fullUrl)
+          if (navigator.clipboard) {
+            try { await navigator.clipboard.writeText(shareUrl); notify('Link copied') }
+            catch (err) { fallbackCopyTextToClipboard(shareUrl) }
+          } else { fallbackCopyTextToClipboard(shareUrl) }
+        })
+        a.appendChild(copyBtn)
+
+        const delBtn = document.createElement('button')
+        delBtn.className = 'history-item-copy'
+        delBtn.title = 'Delete from history'
+        delBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14H6L5 6"></path>
+            <path d="M10 11v6M14 11v6"></path>
+            <path d="M9 6V4h6v2"></path>
+          </svg>
+        `
+        delBtn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          try {
+            const docs = JSON.parse(localStorage.getItem('doc_history_v3')) || {}
+            delete docs[id]
+            localStorage.setItem('doc_history_v3', JSON.stringify(docs))
+          } catch (e) { }
+          renderHistory(document.querySelector('#history-search')?.value || '')
+        })
+        a.appendChild(delBtn)
+        list.appendChild(a)
+      }
+    } catch (e) { }
+  }
+
+  // History search filter
+  document.querySelector('#history-search').addEventListener('input', e => {
+    renderHistory(e.target.value)
+  })
+
+  // Sidebar collapse toggle
+  const sidebarToggle = document.querySelector('#sidebar-toggle')
+  sidebarToggle.addEventListener('click', () => {
+    const collapsed = document.body.classList.toggle('sidebar-collapsed')
+    localStorage.setItem('sidebar_collapsed', collapsed ? '1' : '0')
+    if (!collapsed) renderHistory()
+  })
+
+  // Restore sidebar collapsed state
+  if (localStorage.getItem('sidebar_collapsed') === '1') {
+    document.body.classList.add('sidebar-collapsed')
+  } else {
+    renderHistory()
+  }
+
+  // Settings accordion
+  const settingsToggle = document.querySelector('#settings-toggle')
+  const settingsBody = document.querySelector('#settings-body')
+  settingsToggle.addEventListener('click', () => {
+    settingsBody.classList.toggle('open')
+  })
+
+
+  // Save as HTML / TEXT wired up here
+  document.querySelector('#save-as-html').addEventListener('click', downloadHTML)
+  document.querySelector('#save-as-text').addEventListener('click', downloadTXT)
+
+  // QR link stays href but needs current hash
+  const qrLink = document.querySelector('#qr')
+  const updateQR = () => qrLink.setAttribute('href', '/qr' + location.hash)
+  updateQR()
+  addEventListener('hashchange', updateQR)
+
+  // Clear All Data button
+  document.querySelector('#clear-all-storage').addEventListener('click', () => {
+    if (confirm('Delete all saved documents and settings? This cannot be undone.')) {
+      localStorage.clear()
+      location.href = location.pathname  // strip hash so load() starts blank
+    }
+  })
 
   async function set(hash) {
     if (!hash) return
     const [content, style] = (await decompress(hash.slice(1))).split('\x00')
-    editor.set(content)
+
+    // Extract title if present
+    const match = content.match(/^\n*# (.+)\n([\s\S]*)$/)
+    if (match) {
+      titleInput.value = match[1]
+      editor.set(match[2])
+    } else {
+      titleInput.value = ''
+      editor.set(content)
+    }
+
     if (style) article.setAttribute('style', style)
   }
 
   async function get() {
     const style = article.getAttribute('style')
-    const content = article.textContent + (style !== null ? '\x00' + style : '')
+
+    let textContent = article.textContent
+    if (titleInput.value.trim() !== '') {
+      textContent = `# ${titleInput.value}\n${textContent}`
+    }
+
+    const content = textContent + (style !== null ? '\x00' + style : '')
     return '#' + await compress(content)
   }
 
   function updateTitle() {
-    const match = article.textContent.match(/^\n*#(.+)\n/)
-    document.title = match?.[1] ?? 'Textarea'
+    document.title = titleInput.value.trim() || 'Textarea'
   }
 
   async function compress(string) {
@@ -385,11 +1374,11 @@
     writer.write(byteArray)
     writer.close()
     const buffer = await new Response(stream.readable).arrayBuffer()
-    return new Uint8Array(buffer).toBase64({alphabet: 'base64url'})
+    return new Uint8Array(buffer).toBase64({ alphabet: 'base64url' })
   }
 
   async function decompress(b64) {
-    const byteArray = Uint8Array.fromBase64(b64, {alphabet: 'base64url'})
+    const byteArray = Uint8Array.fromBase64(b64, { alphabet: 'base64url' })
     const stream = new DecompressionStream('deflate-raw')
     const writer = stream.writable.getWriter()
     writer.write(byteArray)
@@ -420,7 +1409,7 @@
           suggestedName: document.title + '.html',
           types: [{
             description: 'HTML file',
-            accept: {'text/html': ['.html']},
+            accept: { 'text/html': ['.html'] },
           }],
         })
         const writable = await handle.createWritable()
@@ -432,7 +1421,7 @@
       }
     }
 
-    const blob = new Blob([html], {type: 'text/html'})
+    const blob = new Blob([html], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -451,7 +1440,7 @@
           suggestedName: document.title + '.txt',
           types: [{
             description: 'TEXT file',
-            accept: {'text/plain': ['.txt']},
+            accept: { 'text/plain': ['.txt'] },
           }],
         })
         const writable = await handle.createWritable()
@@ -463,7 +1452,7 @@
       }
     }
 
-    const blob = new Blob([text], {type: 'text/plain'})
+    const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -477,21 +1466,21 @@
     const frag = document.createDocumentFragment()
 
     const matchers = [
-      {name: 'md-codeblock', re: /```[^\n]*\n[\s\S]*?\n```/y},
-      {name: 'md-codeblock', re: /~~~[^\n]*\n[\s\S]*?\n~~~/y},
-      {name: 'md-h1', re: /^#[ \t]+[^\n]*$/my},
-      {name: 'md-h2', re: /^##[ \t]+[^\n]*$/my},
-      {name: 'md-h3', re: /^###[ \t]+[^\n]*$/my},
-      {name: 'md-h4', re: /^####[ \t]+[^\n]*$/my},
-      {name: 'md-h5', re: /^#####[ \t]+[^\n]*$/my},
-      {name: 'md-h6', re: /^######[ \t]+[^\n]*$/my},
-      {name: 'md-code', re: /`[^`\n]*`/y},
-      {name: 'md-bold', re: /\*\*[^*\n]+?\*\*/y},
-      {name: 'md-bold', re: /__[^_\n]+?__/y},
-      {name: 'md-strike', re: /~~[^~\n]+?~~/y},
-      {name: 'md-italic', re: /\*[^*\n]+?\*/y},
-      {name: 'md-italic', re: /_[^_\n]+?_/y},
-      {name: 'md-url', re: /https?:\/\/[^\s<>()\[\]{}"'`]+/y},
+      { name: 'md-codeblock', re: /```[^\n]*\n[\s\S]*?\n```/y },
+      { name: 'md-codeblock', re: /~~~[^\n]*\n[\s\S]*?\n~~~/y },
+      { name: 'md-h1', re: /^#[ \t]+[^\n]*$/my },
+      { name: 'md-h2', re: /^##[ \t]+[^\n]*$/my },
+      { name: 'md-h3', re: /^###[ \t]+[^\n]*$/my },
+      { name: 'md-h4', re: /^####[ \t]+[^\n]*$/my },
+      { name: 'md-h5', re: /^#####[ \t]+[^\n]*$/my },
+      { name: 'md-h6', re: /^######[ \t]+[^\n]*$/my },
+      { name: 'md-code', re: /`[^`\n]*`/y },
+      { name: 'md-bold', re: /\*\*[^*\n]+?\*\*/y },
+      { name: 'md-bold', re: /__[^_\n]+?__/y },
+      { name: 'md-strike', re: /~~[^~\n]+?~~/y },
+      { name: 'md-italic', re: /\*[^*\n]+?\*/y },
+      { name: 'md-italic', re: /_[^_\n]+?_/y },
+      { name: 'md-url', re: /https?:\/\/[^\s<>()\[\]{}"'`]+/y },
     ]
 
     const specials = ['`', '~', '*', '#', '_', 'h']
@@ -547,60 +1536,16 @@
     article.normalize()
   }
 
+  const notification = document.querySelector('#notification')
+
+  function notify(message) {
+    notification.classList.add('visible')
+    notification.textContent = message
+    setTimeout(() => notification.classList.remove('visible'), 2e3)
+  }
+
   function initUI() {
-    const menu = document.querySelector('#menu')
-    const button = document.querySelector('#button')
-    const qr = document.querySelector('#qr')
-    const shareLink = document.querySelector('#share-link')
-    const saveAsHTML = document.querySelector('#save-as-html')
-    const saveAsText = document.querySelector('#save-as-text')
-
-    button.addEventListener('click', event => {
-      if (event.clientX || event.targetTouches) ripple(event)
-      menu.classList.toggle('visible')
-      qr.setAttribute('href', '/qr' + location.hash)
-      shareLink.setAttribute('href', location.href)
-    })
-
-    function hideMenu() {
-      menu.classList.remove('visible')
-    }
-
-    function notify(message) {
-      const notification = document.querySelector('#notification')
-      notification.classList.add('visible')
-      notification.textContent = message
-      setTimeout(() => notification.classList.remove('visible'), 2e3)
-    }
-
-    document.body.addEventListener('click', event => {
-      let t = event.target
-      if (t.closest('#menu')) return
-      if (t.closest('#button')) return
-      if (t.closest('.ripple')) return
-      menu.classList.remove('visible')
-    })
-
-    shareLink.addEventListener('click', event => {
-      event.preventDefault()
-      if (!navigator.clipboard) {
-        alert('Your browser does not support clipboard API')
-        return
-      }
-      navigator.clipboard.writeText(location.href)
-      notify('Link copied')
-      hideMenu()
-    })
-    saveAsHTML.addEventListener('click', event => {
-      event.preventDefault()
-      downloadHTML()
-      hideMenu()
-    })
-    saveAsText.addEventListener('click', event => {
-      event.preventDefault()
-      downloadTXT()
-      hideMenu()
-    })
+    // Controls are wired up directly after DOM is ready — nothing to do here
   }
 
   function ripple(event) {
@@ -673,8 +1618,8 @@
 
     function save() {
       const s = getSelection()
-      const pos = {start: 0, end: 0, dir: undefined}
-      let {anchorNode, anchorOffset, focusNode, focusOffset} = s
+      const pos = { start: 0, end: 0, dir: undefined }
+      let { anchorNode, anchorOffset, focusNode, focusOffset } = s
       if (!anchorNode || !focusNode) throw 'error1'
       if (anchorNode === element && focusNode === element) {
         pos.start = (anchorOffset > 0 && element.textContent) ? element.textContent.length : 0
@@ -736,7 +1681,7 @@
       if (pos.end < 0) pos.end = 0
 
       if (pos.dir === '<-') {
-        const {start, end} = pos
+        const { start, end } = pos
         pos.start = end
         pos.end = start
       }
@@ -839,7 +1784,7 @@
         && lastRecord.pos.end === pos.end
       ) return
       at++
-      history[at] = {html, pos}
+      history[at] = { html, pos }
       history.splice(at + 1)
       const maxHistory = 10_000
       if (at > maxHistory) {
@@ -896,42 +1841,40 @@
   }
 </script>
 <svg style="display: none" aria-hidden="true" focusable="false">
-  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"
-          class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M12 5l0 14"/>
-    <path d="M5 12l14 0"/>
+  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"
+    stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M12 5l0 14" />
+    <path d="M5 12l14 0" />
   </symbol>
   <symbol id="icon-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"
-          stroke-linecap="round"
-          stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1"/>
-    <path d="M12 14v-11"/>
-    <path d="M9 6l3 -3l3 3"/>
+    stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1" />
+    <path d="M12 14v-11" />
+    <path d="M9 6l3 -3l3 3" />
   </symbol>
-  <symbol id="icon-qrcode" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4"/>
-    <path d="M7 17l0 .01"/>
-    <path d="M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4"/>
-    <path d="M7 7l0 .01"/>
-    <path d="M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4"/>
-    <path d="M17 7l0 .01"/>
-    <path d="M14 14l3 0"/>
-    <path d="M20 14l0 .01"/>
-    <path d="M14 14l0 3"/>
-    <path d="M14 20l3 0"/>
-    <path d="M17 17l3 0"/>
-    <path d="M20 17l0 3"/>
+  <symbol id="icon-qrcode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" />
+    <path d="M7 17l0 .01" />
+    <path d="M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" />
+    <path d="M7 7l0 .01" />
+    <path d="M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" />
+    <path d="M17 7l0 .01" />
+    <path d="M14 14l3 0" />
+    <path d="M20 14l0 .01" />
+    <path d="M14 14l0 3" />
+    <path d="M14 20l3 0" />
+    <path d="M17 17l3 0" />
+    <path d="M20 17l0 3" />
   </symbol>
-  <symbol id="icon-github" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <symbol id="icon-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
     <path
-      d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"/>
+      d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
   </symbol>
   <symbol id="icon-empty" viewBox="0 0 24 24"></symbol>
 </svg>

@@ -16,6 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Inject Short.io credentials
+        env:
+          SHORTIO_DOMAIN: ${{ secrets.SHORTIO_DOMAIN }}
+          SHORTIO_KEY: ${{ secrets.SHORTIO_KEY }}
+        run: |
+          sed -i "s|__SHORTIO_DOMAIN__|${SHORTIO_DOMAIN}|g" index.html
+          sed -i "s|__SHORTIO_KEY__|${SHORTIO_KEY}|g" index.html
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
