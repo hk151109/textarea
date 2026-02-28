@@ -1,13 +1,19 @@
 export async function onRequestPost({ request, env }) {
     try {
-        const { domain, originalURL } = await request.json()
+        const { originalURL } = await request.json()
 
-        // Use env vars if set in Cloudflare dashboard, otherwise expect client to pass it
-        const authHeader = env.SHORTIO_KEY || request.headers.get('Authorization')
-        const finalDomain = env.SHORTIO_DOMAIN || domain
+        const apiKey = env.SHORTIO_KEY
+        const domain = env.SHORTIO_DOMAIN
 
-        if (!authHeader || !finalDomain || !originalURL) {
-            return new Response(JSON.stringify({ error: "Missing required parameters" }), {
+        if (!apiKey || !domain) {
+            return new Response(JSON.stringify({ error: "Short.io not configured on server" }), {
+                status: 503,
+                headers: { "Content-Type": "application/json" }
+            })
+        }
+
+        if (!originalURL) {
+            return new Response(JSON.stringify({ error: "Missing originalURL" }), {
                 status: 400,
                 headers: { "Content-Type": "application/json" }
             })
@@ -18,12 +24,9 @@ export async function onRequestPost({ request, env }) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': authHeader
+                'Authorization': apiKey
             },
-            body: JSON.stringify({
-                domain: finalDomain,
-                originalURL
-            })
+            body: JSON.stringify({ domain, originalURL })
         })
 
         const data = await res.json()

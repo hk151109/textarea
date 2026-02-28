@@ -685,8 +685,7 @@
       <div id="settings-body">
         <div class="settings-group">
           <span class="settings-label">Short.io Link Shortening</span>
-          <input class="settings-input" type="text" id="short-io-domain" placeholder="Domain (e.g. link.domain.com)" />
-          <input class="settings-input" type="password" id="short-io-key" placeholder="Short.io Secret Key" />
+          <span class="settings-hint">Configured on server. Short URLs are generated automatically.</span>
         </div>
         <a class="settings-btn" id="qr" href="qr.html">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -981,67 +980,23 @@
     navigator.serviceWorker.register('sw.js')
   }
 
-  // Short.io Setup
-  const shortIoDomain = document.querySelector('#short-io-domain')
-  const shortIoKey = document.querySelector('#short-io-key')
-
-  if (localStorage.getItem('shortIoDomain')) shortIoDomain.value = localStorage.getItem('shortIoDomain')
-  if (localStorage.getItem('shortIoKey')) shortIoKey.value = localStorage.getItem('shortIoKey')
-
-  shortIoDomain.addEventListener('input', () => localStorage.setItem('shortIoDomain', shortIoDomain.value))
-  shortIoKey.addEventListener('input', () => localStorage.setItem('shortIoKey', shortIoKey.value))
-
-  // Baked-in defaults injected at deploy time — users can override in Settings
-  const DEFAULT_SHORTIO_DOMAIN = '__SHORTIO_DOMAIN__'
-  const DEFAULT_SHORTIO_KEY = '__SHORTIO_KEY__'
-
-  if (!DEFAULT_SHORTIO_DOMAIN.startsWith('__')) {
-    shortIoDomain.placeholder = `Default: ${DEFAULT_SHORTIO_DOMAIN}`
-  }
-  if (!DEFAULT_SHORTIO_KEY.startsWith('__')) {
-    shortIoKey.placeholder = 'Default key is active'
-  }
-
+  // Short.io — backend proxy handles auth, frontend just calls /api/links
   async function getShortUrl(longUrl) {
-    // User's own credentials take priority; fall back to deploy-time defaults
-    const domain = shortIoDomain.value.trim()
-      || (DEFAULT_SHORTIO_DOMAIN.startsWith('__') ? '' : DEFAULT_SHORTIO_DOMAIN)
-    const key = shortIoKey.value.trim()
-      || (DEFAULT_SHORTIO_KEY.startsWith('__') ? '' : DEFAULT_SHORTIO_KEY)
-
-    // If no local credentials, still try — server env vars may cover it
-    if (!domain && !key) return longUrl
-
     try {
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-      if (key) headers['Authorization'] = key
-
       const response = await fetch('/api/links', {
         method: 'POST',
-        headers,
-        body: JSON.stringify({
-          domain: domain || undefined,
-          originalURL: longUrl
-        })
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ originalURL: longUrl })
       })
-
-      let data
-      try { data = await response.json() } catch { return longUrl }
-      if (!response.ok) { console.error('Short.io error:', data); return longUrl }
-      // Short.io returns secureShortURL for HTTPS, shortURL for HTTP
+      if (!response.ok) return longUrl
+      const data = await response.json()
       if (data.secureShortURL) return data.secureShortURL
       if (data.shortURL) return data.shortURL
-      // Surface API errors so the user knows what went wrong
-      if (data.error) {
-        notify('Short.io: ' + data.error)
-        console.error('Short.io error:', data)
-      }
     } catch (e) {
-      notify('Short.io unavailable')
-      console.error('Short.io fetch failed:', e)
+      console.warn('Short.io unavailable, using full URL:', e)
     }
     return longUrl
   }
