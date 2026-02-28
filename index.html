@@ -1009,22 +1009,28 @@
     const key = shortIoKey.value.trim()
       || (DEFAULT_SHORTIO_KEY.startsWith('__') ? '' : DEFAULT_SHORTIO_KEY)
 
-    if (!domain || !key) return longUrl
+    // If no local credentials, still try — server env vars may cover it
+    if (!domain && !key) return longUrl
 
     try {
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+      if (key) headers['Authorization'] = key
+
       const response = await fetch('/api/links', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': key
-        },
+        headers,
         body: JSON.stringify({
-          domain: domain,
+          domain: domain || undefined,
           originalURL: longUrl
         })
       })
-      const data = await response.json()
+
+      let data
+      try { data = await response.json() } catch { return longUrl }
+      if (!response.ok) { console.error('Short.io error:', data); return longUrl }
       // Short.io returns secureShortURL for HTTPS, shortURL for HTTP
       if (data.secureShortURL) return data.secureShortURL
       if (data.shortURL) return data.shortURL
