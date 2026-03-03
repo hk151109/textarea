@@ -1,25 +1,33 @@
 # [textarea.my](https://textarea.my)
 
-A _minimalist_ text editor that lives entirely in your browser and stores everything in the URL hash.
+A _minimalist_ text editor that lives entirely in your browser. Your content is compressed and stored in the URL hash — no account or database required. Just write and share. An optional server-side integration with [Short.io](https://short.io) is available for generating compact short URLs from long document links.
 
 <p align="center">
-  <a href="https://textarea.my/#VZA9TgMxEIV7n2KkdJZIejoURIGgYaGgnGSHeITXXtmzG0zFAZDSREoTlIZDIHGbXIAcAXsTClrP-_meRyD0IhgIx01S6gJ0w44btBxFDzegmsUHEIMClnuKQE44kE3ADpLvAsyCX0YKgK6GmMVF01NIYtgtikoMwcPdDRiMZqyUEWnj-WTyr3s0gitC6bJbqTM47Dbbn68VaD31TZsfI3unNezf1vBYSge4BUmE-UlANSxZDNT0ZFFoCFlvcsJf9clemVx6JHdeMuws5Yw2FVgsnNm5374fdqvvbK4kWTo5p12e1_ArDYus98_HxmlVQc8Il9Tfe2_zAKVvsabjdf_xWZaU37nGHqt54FZ01vwC">  
-    <img src=".github/textarea-my-screenshot.webp" alt="Screenshot of textarea.my" width="550" height="386">
+  <a href="https://textarea.my">
+    <img src=".github/app_screenshot.png" alt="Screenshot of textarea.my" width="550">
   </a>
 </p>
 
 ## Features
 
-- 🗜️ **Compression** – Your text gets compressed with deflate
-- 🔗 **URL hash** – Share your notes by copying a URL
+- 🗜️ **Compression** – Text is compressed with deflate and stored in the URL hash
+- 🔗 **Shareable URLs** – Share any document by copying its URL
+- 📋 **Sidebar & Document History** – A collapsible sidebar on the right keeps a list of your recent documents (stored in `localStorage`). Click any entry to reopen it instantly, search by title, or remove entries you no longer need
+- ✂️ **Short.io link shortening** – When sharing a document whose URL is very long, the app automatically calls a server-side proxy (`/api/links`) that uses [Short.io](https://short.io) to generate a compact short URL. The API key is stored securely on the server — you never need to configure anything in the browser
 - 💕 **Style** – Customize the look with CSS via DevTools
+- 📊 **Live stats** – Word count, character count, and cursor position (line/column) updated as you type
+- 💾 **Auto-save** – Changes are saved to `localStorage` automatically and reflected in the URL
 
 ## Pro tips
 
 - Start your document with `# Title` to set a custom page title
-- Your data lives in localStorage AND the URL. Double the fun!
-- Add a `style` attribute to the `<article>` tag via DevTools. It'll be saved in the URL too!
+- Your data lives in `localStorage` **and** the URL — two ways to get back to your work
+- Click the **sidebar toggle** (top-right chevron) to show or hide your document history panel
+- Use the **search box** inside the sidebar to filter recent documents by title
+- Each document in the sidebar has a **copy-link button** that generates a short URL via Short.io and copies it to your clipboard
+- Add a `style` attribute to the `<article>` tag via DevTools — it will be saved in the URL too!
 - Add [`/qr`](https://textarea.my/qr#c0_NSy1KLElVSFQIDFJIzk9JVUjLL1KozC8tUsjLL0ktVgQA) to get a QR code for the current page
+- Press `Cmd+Shift+.` on macOS or `Ctrl+Shift+.` on Windows/Linux (or use the **New** button in the sidebar) to open a blank document in a new browser tab
 
 ## Examples
 
